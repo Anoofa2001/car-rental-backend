@@ -133,24 +133,23 @@ export const getDashboardData = async (req, res) => {
             return res.status(403).json({ success: false, message: "Unauthorized" });
         }
         const cars = await Car.find({ owner: _id });
-        const bookings = await Booking.find({ owner: _id }).populate("car").populate("car").sort({createdAt: -1});
+        const bookings = await Booking.find({ owner: _id }).populate("car").sort({ createdAt: -1 });
 
-        const pendingBookings = await Booking.find({ owner: _id, status: "pending" })
-        const confirmedBookings = await Booking.find({ owner: _id, status: "confirmed" })
-        const cancelledBookings = await Booking.find({ owner: _id, status: "cancelled" })
+        const pendingBookings = await Booking.find({ owner: _id, status: "pending" });
+        const confirmedBookings = await Booking.find({ owner: _id, status: "confirmed" });
+        const cancelledBookings = await Booking.find({ owner: _id, status: "cancelled" });
 
-        //Calculate monthlyRevenue from bookings where status is comfirmed
-
-        const monthlyRevenue = await Booking.slice().filter(booking => booking.status === "confirmed").reduce((acc, booking) => acc + booking.price, 0);
+        // Calculate monthlyRevenue from confirmed bookings
+        const monthlyRevenue = confirmedBookings.reduce((acc, booking) => acc + (booking.price || 0), 0);
 
         const dashboardData = {
             totalCars: cars.length,
             totalBookings: bookings.length,
             pendingBookings: pendingBookings.length,
-            completedBookings: completedBookings.length,
+            completedBookings: confirmedBookings.length,
             recentBookings: bookings.slice(0, 3),
             monthlyRevenue
-        }
+        };
         res.json({ success: true, dashboardData });
     } catch (error) {
         console.error("Error in getDashboardData:", error);
