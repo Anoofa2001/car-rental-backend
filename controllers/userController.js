@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import Car from "../models/car.js";
+import Car from "../models/Car.js";
 
 
 //generate JWT token
