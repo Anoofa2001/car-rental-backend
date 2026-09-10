@@ -7,11 +7,16 @@ import fs from "fs";
 // API to change role to owner
 export const changeRoleToOwner = async (req, res) => {
     try {
+        console.log("📝 changeRoleToOwner called");
+        console.log("   req.user:", req.user ? { _id: req.user._id, email: req.user.email } : "NO USER");
+        
         const { _id } = req.user;
-        await User.findByIdAndUpdate(_id, { role: "owner" });
+        const updated = await User.findByIdAndUpdate(_id, { role: "owner" }, { new: true });
+        
+        console.log("✅ User role updated:", updated ? { _id: updated._id, role: updated.role } : "FAILED");
         res.status(200).json({ success: true, message: "Role changed to owner successfully" });
     } catch (error) {
-        console.error("Error in changeRoleToOwner:", error);
+        console.error("❌ Error in changeRoleToOwner:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };

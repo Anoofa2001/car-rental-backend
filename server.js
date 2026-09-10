@@ -8,9 +8,6 @@ import bookingRouter from "./routes/bookingRoutes.js";
 
 //initialize express app
 const app = express();
-//connect database
-await connectDB();
-
 //middleware
 app.use(cors());
 app.use(express.json());
@@ -24,6 +21,16 @@ app.use('/api/bookings', bookingRouter);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch {
+    console.error("Server startup aborted because MongoDB is unavailable.");
+    process.exit(1);
+  }
+};
+
+startServer();
